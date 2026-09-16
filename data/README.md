@@ -97,7 +97,31 @@ verification. Later annual buoy files were not opened for exploratory analysis.
   4 minutes. There are 23 intervals longer than 30 minutes; the largest is
   19 days, 2 hours. These count timestamp intervals, not missing measurements.
 
-The inspection preserves all rows and leaves missing values unfilled. The causes
-of the irregular timestamps and remaining measurement quality issues still need
-investigation. Forecast targets will need to be aligned by elapsed time because
-twelve rows ahead does not reliably correspond to six hours ahead.
+## Missingness and timestamp diagnostics
+
+The four wave fields (`WVHT`, `DPD`, `APD`, `MWD`) are missing together on
+175 rows. The remaining 9,350 rows have all four fields present; no rows have
+only some of these fields missing.
+
+The longest interval between records spans 2023-09-23 22:30 UTC to
+2023-10-13 00:30 UTC. The record at the latter timestamp has no wave measurements,
+so this interval does not establish the full duration without usable wave data.
+
+Around the first interval shorter than 30 minutes, wave measurements occur at
+2023-10-13 19:56 and 20:26 UTC. Records at 19:30 and 20:00 contain water
+temperature but no wave measurements. Across the file:
+
+| Minute within hour | Rows with all four wave fields | Rows with none of the four wave fields |
+| --- | ---: | ---: |
+| 00 | 2,779 | 89 |
+| 26 | 1,898 | 0 |
+| 30 | 2,778 | 86 |
+| 56 | 1,895 | 0 |
+
+These results show that short intervals can separate records with different
+measurement availability. They do not establish the cause of the reporting
+schedule changes or long gaps. I have preserved the original timestamps and
+left missing measurements unfilled. The next step is to inspect coverage among
+usable wave records separately. Nonmissing values still require quality checks.
+Forecast targets will need to be aligned by elapsed time because twelve rows
+ahead does not reliably correspond to six hours ahead.

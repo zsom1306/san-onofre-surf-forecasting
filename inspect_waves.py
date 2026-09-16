@@ -50,3 +50,43 @@ print("\nMost common time steps between successive rows:")
 print(time_steps.value_counts().head().to_string())
 print(f"Gaps longer than 30 minutes: {(time_steps > pd.Timedelta(minutes=30)).sum()}")
 print(f"Largest time step: {time_steps.max()}")
+
+# Compare missingness across the four wave measurements within each row.
+wave_columns = ["WVHT", "DPD", "APD", "MWD"]
+missing_wave_cells = waves[wave_columns].isna()
+any_wave_missing = missing_wave_cells.any(axis=1)
+all_waves_missing = missing_wave_cells.all(axis=1)
+partly_missing = any_wave_missing & ~all_waves_missing
+
+print("\nWave measurement availability by row:")
+print(f"All four present: {(~any_wave_missing).sum()}")
+print(f"All four missing: {all_waves_missing.sum()}")
+print(f"Only some missing: {partly_missing.sum()}")
+print("\nFirst five rows with all four wave measurements missing:")
+print(waves.loc[all_waves_missing, wave_columns + ["ATMP", "WTMP"]].head().to_string())
+
+# Pair each record with its predecessor to locate gaps in the full record stream.
+record_times = waves.index.to_series()
+gaps = pd.DataFrame({
+    "previous_time": record_times.shift(1),
+    "current_time": record_times,
+    "elapsed": record_times.diff(),
+})
+long_gaps = gaps.loc[gaps["elapsed"] > pd.Timedelta(minutes=30)]
+print("\nFive longest intervals between records (UTC):")
+print(long_gaps.sort_values("elapsed", ascending=False).head().to_string(index=False))
+
+# Inspect the first short interval without assuming its cause.
+short_steps = time_steps.loc[time_steps < pd.Timedelta(minutes=30)]
+if not short_steps.empty:
+    example_time = short_steps.index[0]
+    window_start = example_time - pd.Timedelta(minutes=30)
+    window_end = example_time + pd.Timedelta(minutes=30)
+    print("\nRecords around the first interval shorter than 30 minutes (UTC):")
+    print(waves.loc[window_start:window_end, wave_columns + ["ATMP", "WTMP"]].to_string())
+
+# Compare the minute within each hour across both groups of records.
+print("\nTimestamp minute counts for rows with all wave measurements present:")
+print(waves.loc[~any_wave_missing].index.minute.value_counts().sort_index().to_string())
+print("\nTimestamp minute counts for rows with all wave measurements missing:")
+print(waves.loc[all_waves_missing].index.minute.value_counts().sort_index().to_string())

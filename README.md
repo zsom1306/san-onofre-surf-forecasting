@@ -11,6 +11,11 @@ I started by inspecting the 2023 observations from Green Beach Offshore
 (CDIP 271 / NDBC 46277). The dataset contains 9,525 rows, missing wave measurements,
 and irregular timestamps, including a gap of more than 19 days.
 
+Further inspection shows that all four wave fields are missing together on
+175 rows. Records with wave measurements use both 00/30 and 26/56 minutes
+within the hour; some short intervals separate wave records from records
+containing temperature but no wave measurements.
+
 These observations describe offshore conditions rather than breaking-wave height
 at San Onofre. Selecting the nearshore target location and investigating data
 quality are the next steps. Model development has not started yet.
