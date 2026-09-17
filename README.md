@@ -21,6 +21,10 @@ table. Its intervals are at least 30 minutes, with 21 longer gaps. The largest
 gap between wave observations is 19 days, 21 hours, and 26 minutes. Original
 timestamps are preserved, and missing measurements remain unfilled.
 
+All 9,350 retained observations pass basic checks for nonnegative wave height,
+positive wave periods, and directions within 0-360 degrees. These checks address
+obvious value violations; they do not establish full measurement accuracy.
+
 These observations describe offshore conditions rather than breaking-wave height
 at San Onofre. Selecting the nearshore target location and investigating data
 quality are the next steps. Model development has not started yet.

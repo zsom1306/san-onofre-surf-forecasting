@@ -111,3 +111,25 @@ wave_gaps = pd.DataFrame({
 long_wave_gaps = wave_gaps.loc[wave_gaps["elapsed"] > pd.Timedelta(minutes=30)]
 print("\nFive longest intervals between wave observations (UTC):")
 print(long_wave_gaps.sort_values("elapsed", ascending=False).head().to_string(index=False))
+
+# Summarize observed ranges before applying basic value checks.
+range_summary = wave_observations.agg(["count", "min", "max"]).T
+print("\nWave measurement ranges (WVHT: m; DPD/APD: s; MWD: degrees true):")
+print(range_summary.to_string())
+
+# These checks flag obvious violations, not every possible measurement error.
+range_flags = pd.DataFrame({
+    "negative_height": wave_observations["WVHT"] < 0,
+    "nonpositive_dominant_period": wave_observations["DPD"] <= 0,
+    "nonpositive_average_period": wave_observations["APD"] <= 0,
+    "direction_outside_0_360": ~wave_observations["MWD"].between(0, 360, inclusive="both"),
+})
+flagged_rows = range_flags.any(axis=1)
+print("\nNumber of violations for each basic value check:")
+print(range_flags.sum().to_string())
+print(f"Observations failing at least one check: {flagged_rows.sum()}")
+if flagged_rows.any():
+    print("\nFirst ten flagged observations:")
+    print(wave_observations.loc[flagged_rows].head(10).to_string())
+else:
+    print("No observations violate these four checks; further quality assessment is still needed.")

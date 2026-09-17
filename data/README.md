@@ -148,6 +148,27 @@ The longest spans 2023-09-23 22:30 UTC to 2023-10-13 19:56 UTC. Intermediate
 records without wave measurements had split this gap in the full record stream.
 
 Selection has not filled missing observations or made the time series regular.
-No timestamps were rounded, and no measurement values were changed. The next
-data-quality check is to inspect whether the retained values fall within
-physically plausible ranges; presence alone does not establish measurement quality.
+No timestamps were rounded, and no measurement values were changed.
+
+## Basic value checks
+
+I checked the 9,350 retained observations for negative significant wave heights,
+nonpositive dominant or average periods, and directions outside 0-360 degrees.
+The direction screen accepts both 0 and 360 as north; NDBC documents directions
+clockwise from true north in its [field definitions](https://www.ndbc.noaa.gov/faq/measdes.shtml).
+
+| Field | Count | Minimum | Maximum | Units |
+| --- | ---: | ---: | ---: | --- |
+| WVHT | 9,350 | 0.39 | 2.19 | meters |
+| DPD | 9,350 | 3.85 | 22.22 | seconds |
+| APD | 9,350 | 3.44 | 14.10 | seconds |
+| MWD | 9,350 | 147 | 295 | degrees true |
+
+Each of the four checks returned zero violations. No observations were removed
+or modified by these diagnostics. I have not imposed an upper cutoff on height
+or period based on the observed maxima: unusually large measurements may reflect
+real events and need context before exclusion.
+
+Passing these checks does not establish measurement accuracy. They do not detect
+every possible error, including plausible but incorrect readings or sensor drift.
+The next analysis is a time-series plot with observation gaps shown explicitly.
