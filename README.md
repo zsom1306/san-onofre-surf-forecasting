@@ -16,6 +16,11 @@ Further inspection shows that all four wave fields are missing together on
 within the hour; some short intervals separate wave records from records
 containing temperature but no wave measurements.
 
+I separated the 9,350 records with all four wave fields into a wave observation
+table. Its intervals are at least 30 minutes, with 21 longer gaps. The largest
+gap between wave observations is 19 days, 21 hours, and 26 minutes. Original
+timestamps are preserved, and missing measurements remain unfilled.
+
 These observations describe offshore conditions rather than breaking-wave height
 at San Onofre. Selecting the nearshore target location and investigating data
 quality are the next steps. Model development has not started yet.

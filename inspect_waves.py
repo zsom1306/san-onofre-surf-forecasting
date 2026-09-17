@@ -90,3 +90,24 @@ print("\nTimestamp minute counts for rows with all wave measurements present:")
 print(waves.loc[~any_wave_missing].index.minute.value_counts().sort_index().to_string())
 print("\nTimestamp minute counts for rows with all wave measurements missing:")
 print(waves.loc[all_waves_missing].index.minute.value_counts().sort_index().to_string())
+
+# Keep complete wave records separately; presence does not establish data quality.
+wave_observations = waves.loc[~any_wave_missing, wave_columns].copy()
+observation_times = wave_observations.index.to_series()
+wave_time_steps = observation_times.diff().dropna()
+
+print(f"\nWave observation table shape: {wave_observations.shape}")
+print(f"Original measurement table shape: {waves.shape}")
+print("\nAll time-step frequencies between wave observations:")
+print(wave_time_steps.value_counts().sort_index().to_string())
+print(f"Wave intervals shorter than 30 minutes: {(wave_time_steps < pd.Timedelta(minutes=30)).sum()}")
+print(f"Wave intervals longer than 30 minutes: {(wave_time_steps > pd.Timedelta(minutes=30)).sum()}")
+
+wave_gaps = pd.DataFrame({
+    "previous_time": observation_times.shift(1),
+    "current_time": observation_times,
+    "elapsed": observation_times.diff(),
+})
+long_wave_gaps = wave_gaps.loc[wave_gaps["elapsed"] > pd.Timedelta(minutes=30)]
+print("\nFive longest intervals between wave observations (UTC):")
+print(long_wave_gaps.sort_values("elapsed", ascending=False).head().to_string(index=False))

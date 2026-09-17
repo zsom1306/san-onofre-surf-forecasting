@@ -121,7 +121,33 @@ temperature but no wave measurements. Across the file:
 These results show that short intervals can separate records with different
 measurement availability. They do not establish the cause of the reporting
 schedule changes or long gaps. I have preserved the original timestamps and
-left missing measurements unfilled. The next step is to inspect coverage among
-usable wave records separately. Nonmissing values still require quality checks.
+left missing measurements unfilled. Nonmissing values still require quality checks.
 Forecast targets will need to be aligned by elapsed time because twelve rows
 ahead does not reliably correspond to six hours ahead.
+
+## Wave observation coverage
+
+`wave_observations` selects rows with all four wave fields present and retains
+only those fields. It contains 9,350 rows and four columns. This is an in-memory
+copy; the original 9,525-row measurement table and downloaded file are preserved.
+The current selection excludes 175 rows with no wave measurements. Because no
+rows have partially missing wave fields, it retains every nonmissing wave height
+in this file. This selection rule will need reassessment for other datasets.
+
+| Interval between wave observations | Count |
+| --- | ---: |
+| 30 minutes | 9,328 |
+| 1 hour | 17 |
+| 1 hour, 30 minutes | 1 |
+| 2 hours | 2 |
+| 19 days, 21 hours, 26 minutes | 1 |
+
+There are 9,349 intervals for 9,350 observations. All intervals shorter than
+30 minutes disappear after selection; 21 intervals exceed 30 minutes.
+The longest spans 2023-09-23 22:30 UTC to 2023-10-13 19:56 UTC. Intermediate
+records without wave measurements had split this gap in the full record stream.
+
+Selection has not filled missing observations or made the time series regular.
+No timestamps were rounded, and no measurement values were changed. The next
+data-quality check is to inspect whether the retained values fall within
+physically plausible ranges; presence alone does not establish measurement quality.
