@@ -171,4 +171,16 @@ real events and need context before exclusion.
 
 Passing these checks does not establish measurement accuracy. They do not detect
 every possible error, including plausible but incorrect readings or sensor drift.
-The next analysis is a time-series plot with observation gaps shown explicitly.
+
+## Wave-height time-series plot
+
+The inspection script saves `figures/wave_height_2023.png` using Matplotlib.
+All 9,350 retained wave-height measurements appear at their original timestamps,
+without averaging, smoothing, or filling gaps. Intervals longer than 30 minutes
+split the line into 22 separate runs. The largest gap is shaded; shorter gaps
+are also line breaks, although they may be difficult to see at this scale.
+
+The plot shows multiple rises and falls, with peaks above 2 meters in August
+and late December. The maximum observed height is 2.19 m at 2023-08-21 06:30 UTC.
+These observations do not establish event causes or recurring seasonality.
+The shaded interval represents unavailable wave observations, not zero height.

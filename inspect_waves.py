@@ -2,7 +2,13 @@
 
 from pathlib import Path
 
+import matplotlib
 import pandas as pd
+
+# Render saved figures without opening an interactive window.
+matplotlib.use("Agg")
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
 
 # Locate the data beside this script, regardless of the terminal's directory.
 data_path = Path(__file__).resolve().parent / "data" / "raw" / "46277h2023.txt.gz"
@@ -133,3 +139,37 @@ if flagged_rows.any():
     print(wave_observations.loc[flagged_rows].head(10).to_string())
 else:
     print("No observations violate these four checks; further quality assessment is still needed.")
+
+# Start a new plotted run whenever successive wave observations are >30 min apart.
+gap_before = observation_times.diff() > pd.Timedelta(minutes=30)
+segment_ids = gap_before.cumsum()
+
+fig, ax = plt.subplots(figsize=(12, 5), layout="constrained")
+for segment_id, segment in wave_observations.groupby(segment_ids):
+    ax.plot(segment.index, segment["WVHT"], color="#176B87",
+            linewidth=0.7, marker=".", markersize=1.5)
+
+# Highlight the largest gap; all other gaps also break the plotted line.
+if not long_wave_gaps.empty:
+    largest_gap = long_wave_gaps.sort_values("elapsed", ascending=False).iloc[0]
+    ax.axvspan(largest_gap["previous_time"], largest_gap["current_time"],
+               color="#E5E7EB", label="Longest gap: no wave observations")
+    ax.legend(loc="upper left", frameon=False)
+
+ax.set_title("Green Beach Offshore | CDIP 271 / NDBC 46277 | 2023\n"
+             "Observed significant wave height; line breaks at gaps >30 minutes",
+             fontsize=12, loc="left", pad=14)
+ax.set_xlabel("Observation time (UTC)")
+ax.set_ylabel("Significant wave height (m)")
+ax.set_ylim(bottom=0)
+ax.xaxis.set_major_locator(mdates.MonthLocator(tz="UTC"))
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y", tz="UTC"))
+ax.grid(axis="y", alpha=0.25)
+ax.spines[["top", "right"]].set_visible(False)
+
+figure_path = Path(__file__).resolve().parent / "figures" / "wave_height_2023.png"
+figure_path.parent.mkdir(exist_ok=True)
+fig.savefig(figure_path, dpi=180)
+plt.close(fig)
+print(f"\nSaved wave-height plot: {figure_path}")
+print(f"Plotted {len(wave_observations)} observations in {segment_ids.nunique()} separate runs.")

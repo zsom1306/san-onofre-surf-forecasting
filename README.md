@@ -29,9 +29,23 @@ These observations describe offshore conditions rather than breaking-wave height
 at San Onofre. Selecting the nearshore target location and investigating data
 quality are the next steps. Model development has not started yet.
 
+## Wave height over time
+
+![Observed wave height at Green Beach Offshore during 2023](figures/wave_height_2023.png)
+
+The plot shows all 9,350 retained wave-height observations at their original
+timestamps. Lines break whenever successive observations are more than 30 minutes
+apart. The shaded interval marks the longest gap; smaller gaps also break the
+line but are difficult to distinguish at this scale.
+
+Several rises and falls are visible, including peaks above 2 meters in August
+and late December. The plot alone does not establish the causes of these events
+or a recurring seasonal pattern.
+
 ## Files
 
-- `inspect_waves.py`: load the file and inspect timestamps, measurements, and missingness.
+- `inspect_waves.py`: inspect the observations and generate the wave-height plot.
+- `figures/wave_height_2023.png`: generated plot of the 2023 wave observations.
 - `data/README.md`: data source, units, download command, and limitations.
 - `requirements.txt`: Python dependencies.
 - `.gitignore`: keep the local environment and downloaded data out of Git.
@@ -52,7 +66,9 @@ run the inspection:
 .\.venv\Scripts\python.exe inspect_waves.py
 ```
 
-Verified with Python 3.10.6 and pandas 2.3.3.
+Running the script also saves `figures/wave_height_2023.png`; it does not open
+an interactive plot window. Verified with Python 3.10.6, pandas 2.3.3, and
+Matplotlib 3.10.8.
 
 ## Planned evaluation
 
