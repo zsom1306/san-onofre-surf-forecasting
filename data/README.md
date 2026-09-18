@@ -184,3 +184,30 @@ The plot shows multiple rises and falls, with peaks above 2 meters in August
 and late December. The maximum observed height is 2.19 m at 2023-08-21 06:30 UTC.
 These observations do not establish event causes or recurring seasonality.
 The shaded interval represents unavailable wave observations, not zero height.
+
+## August peak inspection
+
+I selected August 19-23, 2023 (UTC) for a closer look around the maximum observed
+height. This is a retrospective exploration of the already-inspected 2023 data,
+not a representative sample or an untouched evaluation period.
+
+- The window has 238 complete wave observations out of 240 expected half-hour
+  timestamps. Existing source rows have zero missing cells in the four wave fields.
+- The missing timestamps are August 22 at 08:00 and 08:30 UTC. All retained
+  observations in this window lie on the expected 00/30-minute grid. This grid
+  check is specific to this window; later records use 26/56-minute timestamps.
+- The 2.19 m maximum occurs at August 21 06:30 and 07:00 UTC. Adjacent heights
+  are 2.11 m at 06:00 and 2.12 m at 07:30, supporting a sustained elevation
+  rather than one isolated high reading. The broader plot shows a rise and fall.
+- At 06:30, dominant period is 6.06 s and average period is 4.97 s. Both periods
+  shorten around the height peak relative to earlier readings in this window.
+
+The script saves `figures/wave_event_august_2023.png` with separate panels for
+height and periods, a shared UTC time axis, and a dashed line at the first
+occurrence of the maximum. Every plotted variable preserves all 238 values;
+lines break across the missing timestamps. The expected time grid is used only
+to count missing observations, not to round, resample, or fill measurements.
+
+I retained the peak observations. Neighboring measurements provide context but
+do not independently establish accuracy or event cause. The next project decision
+is to verify the nearshore target site and dataset before creating forecast labels.

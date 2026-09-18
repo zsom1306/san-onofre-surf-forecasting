@@ -42,10 +42,22 @@ Several rises and falls are visible, including peaks above 2 meters in August
 and late December. The plot alone does not establish the causes of these events
 or a recurring seasonal pattern.
 
+## August peak inspection
+
+I inspected August 19-23 around the largest observed wave height. The window
+contains 238 of 240 expected half-hour observations, with two missing timestamps
+on August 22. The 2.19 m maximum occurs at both 06:30 and 07:00 UTC on August 21
+and sits within a broader rise and fall. Dominant and average wave periods
+shorten around the height peak. I retained the observations; this inspection
+does not establish the event's cause or independently verify sensor accuracy.
+
+[View the height and period detail plot](figures/wave_event_august_2023.png).
+
 ## Files
 
-- `inspect_waves.py`: inspect the observations and generate the wave-height plot.
+- `inspect_waves.py`: inspect the observations and generate the overview and event plots.
 - `figures/wave_height_2023.png`: generated plot of the 2023 wave observations.
+- `figures/wave_event_august_2023.png`: height and periods during August 19-23.
 - `data/README.md`: data source, units, download command, and limitations.
 - `requirements.txt`: Python dependencies.
 - `.gitignore`: keep the local environment and downloaded data out of Git.
@@ -66,9 +78,9 @@ run the inspection:
 .\.venv\Scripts\python.exe inspect_waves.py
 ```
 
-Running the script also saves `figures/wave_height_2023.png`; it does not open
-an interactive plot window. Verified with Python 3.10.6, pandas 2.3.3, and
-Matplotlib 3.10.8.
+Running the script also saves both plots in `figures/`; it does not open an
+interactive plot window. Verified with Python 3.10.6, pandas 2.3.3, and Matplotlib
+3.10.8.
 
 ## Planned evaluation
 

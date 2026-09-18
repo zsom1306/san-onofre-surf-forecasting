@@ -173,3 +173,52 @@ fig.savefig(figure_path, dpi=180)
 plt.close(fig)
 print(f"\nSaved wave-height plot: {figure_path}")
 print(f"Plotted {len(wave_observations)} observations in {segment_ids.nunique()} separate runs.")
+
+# Inspect a fixed window around the observed August peak, including both end dates.
+event = wave_observations.loc["2023-08-19":"2023-08-23"].copy()
+event_records = waves.loc["2023-08-19":"2023-08-23"]
+expected_times = pd.date_range("2023-08-19", "2023-08-24", freq="30min",
+                               inclusive="left", tz="UTC")
+missing_times = expected_times.difference(event.index)
+off_grid_times = event.index.difference(expected_times)
+
+print(f"\nAugust 19-23: {len(event)} complete wave observations; {len(expected_times)} expected half-hour slots.")
+print("Missing wave cells in the existing source rows in this window:")
+print(event_records[wave_columns].isna().sum().to_string())
+print(f"Expected timestamps without complete wave observations: {missing_times.tolist()}")
+print(f"Wave timestamps outside this expected grid: {len(off_grid_times)}")
+
+peak_time = event["WVHT"].idxmax()
+print(f"\nFirst window maximum: {event.loc[peak_time, 'WVHT']:.2f} m at {peak_time}")
+print("Measurements within one hour of the maximum:")
+print(event.loc[peak_time - pd.Timedelta(hours=1):peak_time + pd.Timedelta(hours=1),
+                ["WVHT", "DPD", "APD"]].to_string())
+
+# Separate panels preserve each variable's units while sharing the same time axis.
+event_fig, axes = plt.subplots(2, 1, figsize=(11, 7), sharex=True, layout="constrained")
+for segment_id, segment in event.groupby(segment_ids.loc[event.index]):
+    axes[0].plot(segment.index, segment["WVHT"], color="#176B87", marker=".", linewidth=1)
+    axes[1].plot(segment.index, segment["DPD"], color="#176B87", marker=".", linewidth=1)
+    axes[1].plot(segment.index, segment["APD"], color="#C46B24", marker=".", linewidth=1)
+
+axes[0].set_ylabel("Significant wave height (m)")
+axes[0].set_ylim(bottom=0)
+axes[1].set_ylabel("Wave period (s)")
+axes[1].set_ylim(bottom=0)
+# The first two period lines represent DPD and APD in the first plotted run.
+axes[1].legend(axes[1].lines[:2], ["Dominant period (DPD)", "Average period (APD)"],
+               loc="lower left", frameon=False)
+for ax in axes:
+    ax.axvline(peak_time, color="#6B7280", linestyle="--", linewidth=0.8)
+    ax.grid(axis="y", alpha=0.25)
+    ax.spines[["top", "right"]].set_visible(False)
+
+axes[1].set_xlabel("Observation time (UTC)")
+axes[1].xaxis.set_major_locator(mdates.DayLocator(tz="UTC"))
+axes[1].xaxis.set_major_formatter(mdates.DateFormatter("%b %d", tz="UTC"))
+event_fig.suptitle("Green Beach Offshore | August 19-23, 2023\n"
+                   "Dashed line: first height maximum; line breaks: gaps >30 minutes", fontsize=12)
+event_figure_path = figure_path.parent / "wave_event_august_2023.png"
+event_fig.savefig(event_figure_path, dpi=180)
+plt.close(event_fig)
+print(f"\nSaved event plot: {event_figure_path}")
